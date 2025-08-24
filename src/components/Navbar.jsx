@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -5,9 +6,10 @@ export default function Navbar() {
   const navMenu = () => {
     return (
       <>
-        <li><Link href="/about">About</Link></li>
-        <li><Link href="/services">Services</Link></li>
-        <li><Link href="/contact">Contact</Link></li>
+        <li><Link href={"/"}>Home</Link></li>
+        <li><Link href={"/about"}>About</Link></li>
+        <li><Link href={"/services"}>Services</Link></li>{" "}
+        <li><Link href={"/contact"}>Contact</Link></li>
       </>
     );
   };
@@ -29,7 +31,8 @@ export default function Navbar() {
               {navMenu()}
             </ul>
           </div>
-          <Link href="/" className="text-2xl">
+          <Link href={"/"} className="text-2xl flex items-center gap-2">
+          <Image src={"/assets/logo.png"} width={25}height={25} alt="Logo"  />
             NextTour
           </Link>
         </div>
@@ -39,7 +42,7 @@ export default function Navbar() {
           </ul>
         </div>
         <div className="navbar-end">
-          <Link href="/login">Login</Link>
+          <Link href={"/login"}>Login</Link>
         </div>
       </div>
     </div>

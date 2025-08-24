@@ -21,9 +21,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <nav>
+        
           <Navbar></Navbar>
-        </nav>
+        
         {children}
       </body>
     </html>
