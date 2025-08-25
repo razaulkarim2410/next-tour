@@ -1,5 +1,6 @@
-import dbConnect from '@/lib/dbConnect'
+import dbConnect, { collectionNameObj } from '@/lib/dbConnect'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 export default async function AllProducts() {
@@ -137,20 +138,28 @@ export default async function AllProducts() {
 //     "stock": 34
 //   }
 // ]
-const serviceCollection = dbConnect("products")
+  // const serviceCollection = await dbConnect("products");
+const serviceCollection = dbConnect(collectionNameObj.servicesCollection)
 const data = await serviceCollection.find({}).toArray()
   return (
  <div className='grid grid-cols-12 w-10/12 mx-auto my-10 gap-3'>
   {data.map((item)=> {
     return(
       <div className='col-span-12 md:col-span-4 lg:col-span-3 p-4 h-full border gap-3 ' key={item.product_id}> 
+      <figure>
       <Image className='' src={item.image} width={250} height={300} alt={item.title}/>
+      </figure>
+      
       <div className='flex justify-between items-center mt-4'>
+        <div className='flex items-end'>
         <div>
           <h2 className='font-bold text-xl'>{item.title}</h2>
           <p className='font-bold text-xl text-orange-500'>Price: ${item.price}</p>
         </div>
-
+      <div>
+        <Link className='' href={`/detail/${item._id}`}>Detail</Link>
+      </div>
+      </div>
       </div>
       </div>
     )
