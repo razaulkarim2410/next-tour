@@ -8,7 +8,9 @@ export default function Navbar() {
       <>
         <li><Link href={"/"}>Home</Link></li>
         <li><Link href={"/about"}>About</Link></li>
-        <li><Link href={"/services"}>Services</Link></li>{" "}
+        <li><Link href={"/services"}>Services</Link></li>
+        <li><Link href={"/all-products"}>All Products</Link></li>
+        <li><Link href={"/dashboard/add-product"}>Dashboard</Link></li>
         <li><Link href={"/contact"}>Contact</Link></li>
       </>
     );
@@ -32,7 +34,7 @@ export default function Navbar() {
             </ul>
           </div>
           <Link href={"/"} className="text-2xl flex items-center gap-2">
-          <Image src={"/assets/logo.png"} width={25}height={25} alt="Logo"  />
+            <Image src={"/assets/logo.png"} width={25} height={25} alt="Logo" />
             NextTour
           </Link>
         </div>

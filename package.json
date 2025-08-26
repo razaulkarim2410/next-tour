@@ -12,10 +12,12 @@
     "@tailwindcss/postcss": "^4.1.12",
     "daisyui": "^5.0.50",
     "mongodb": "^6.18.0",
+    "mongoose": "^8.18.0",
     "next": "15.5.0",
     "postcss": "^8.5.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hot-toast": "^2.6.0",
     "react-responsive-carousel": "^3.2.23",
     "tailwindcss": "^4.1.12"
   },
