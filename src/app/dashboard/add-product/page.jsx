@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function AddProductPage() {
+  const { data: session, status } = useSession();
   const [formData, setFormData] = useState({
     product_id: "",
     image: "",
@@ -14,6 +17,13 @@ export default function AddProductPage() {
     brand: "",
     stock: "",
   });
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      signIn(); // redirects to /login automatically
+    }
+  }, [status]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,11 +61,20 @@ export default function AddProductPage() {
     }
   };
 
+  // Show loading while session is being checked
+  if (status === "loading") {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+
+  // Only render form if session exists
+  if (!session) return null;
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded">
       <Toaster position="top-right" />
       <h1 className="text-2xl font-bold mb-4">Add New Product</h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
+        {/* ... your input fields ... */}
         <input
           type="number"
           name="product_id"
@@ -140,7 +159,7 @@ export default function AddProductPage() {
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="bg-orange-600 text-white py-2 rounded hover:bg-orange-700"
         >
           Add Product
         </button>
