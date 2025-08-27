@@ -7,19 +7,22 @@ export default function LoginPage() {
       <h1 className="text-3xl font-bold">Login</h1>
 
       <button
-        onClick={() => signIn("google")}
+        onClick={() => signIn("google", { callbackUrl: "/" })} // ✅ redirect to home
         className="bg-red-500 text-white px-4 py-2 rounded"
       >
         Login with Google
       </button>
-
 
       <form
         onSubmit={(e) => {
           e.preventDefault();
           const email = e.target.email.value;
           const password = e.target.password.value;
-          signIn("credentials", { email, password });
+          signIn("credentials", { 
+            email, 
+            password,
+            callbackUrl: "/"  // ✅ redirect to home
+          });
         }}
         className="flex flex-col gap-2"
       >

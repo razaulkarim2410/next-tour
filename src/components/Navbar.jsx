@@ -16,9 +16,9 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50"> 
+    <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50 "> 
       {/* sticky navbar */}
-      <div className="navbar-start">
+      <div className="navbar-start ">
         {/* Mobile dropdown */}
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
