@@ -29,9 +29,12 @@ export const authOptions = {
   pages: { signIn: "/login" },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      return "/products"; // redirect after login
+      // allow relative paths
+      if (url.startsWith("/")) return url;
+      return baseUrl;
     },
   },
+
 };
 
 const handler = NextAuth(authOptions);
