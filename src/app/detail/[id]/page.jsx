@@ -1,75 +1,76 @@
-// src/app/detail/[id]/page.jsx
-import React from "react";
-import dbConnect, { collectionNameObj } from "@/lib/dbConnect";
-import { ObjectId } from "mongodb";
-import Image from "next/image";
+import dbConnect from "@/lib/dbConnect";
+import Product from "@/models/Product";
+import mongoose from "mongoose";
 
 export default async function DetailPage({ params }) {
-  const productsCollection = dbConnect(collectionNameObj.products);
-  
-  // Fetch single product by ObjectId
-  const product = await productsCollection.findOne({ _id: new ObjectId(params.id) });
+  await dbConnect();
+
+  let product = null;
+
+  // ✅ Check if params.id is a valid ObjectId
+  if (mongoose.Types.ObjectId.isValid(params.id)) {
+    product = await Product.findById(params.id).lean();
+  } else {
+    // Otherwise, treat it as a slug
+    product = await Product.findOne({ slug: params.id }).lean();
+  }
 
   if (!product) {
-    return (
-      <div className="w-10/12 mx-auto my-10 text-center text-red-500">
-        ❌ Product not found
-      </div>
-    );
+    return <p className="text-center mt-20 text-red-500">Product not found</p>;
   }
 
   return (
-    <div className="w-11/12 lg:w-9/12 mx-auto my-16 grid grid-cols-1 md:grid-cols-2 gap-10">
-      {/* Product Image */}
-      <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg p-6">
-        {product.image ? (
-          <Image
-            src={product.image}
-            width={500}
-            height={500}
-            alt={product.title}
-            className="rounded-xl object-cover"
-            unoptimized
-          />
-        ) : (
-          <div className="w-[400px] h-[400px] bg-gray-200 flex items-center justify-center text-gray-500">
-            No Image
-          </div>
-        )}
+    <div className="w-11/12 mx-auto py-10 grid md:grid-cols-2 gap-10">
+      {/* Left: Image */}
+      <div className="flex justify-center">
+        <img
+          src={product.image || "/placeholder.png"}
+          alt={product.title}
+          className="w-full max-w-md rounded-lg shadow-lg"
+        />
       </div>
 
-      {/* Product Details */}
-      <div className="flex flex-col justify-between bg-white rounded-2xl shadow-lg p-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-          <p className="text-lg text-gray-600 mt-2">{product.description}</p>
+      {/* Right: Product Info */}
+      <div>
+        <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
 
-          <div className="mt-6">
-            <p className="text-2xl font-bold text-orange-500">💲{product.price}</p>
-            <p className={`mt-2 ${product.stock > 0 ? "text-green-600" : "text-red-600"}`}>
-              {product.stock > 0 ? `✅ In Stock (${product.stock} left)` : "❌ Out of Stock"}
-            </p>
-          </div>
+        {/* Rating */}
+        {product.rating && (
+          <p className="text-yellow-500 mb-3 text-lg">
+            {"★".repeat(Math.round(product.rating))}{" "}
+            {"☆".repeat(5 - Math.round(product.rating))} 
+            <span className="text-gray-600 ml-2">
+              ({product.rating} / 5)
+            </span>
+          </p>
+        )}
 
-          <div className="mt-6">
-            <p className="text-gray-700"><span className="font-semibold">Brand:</span> {product.brand}</p>
-            <p className="text-gray-700"><span className="font-semibold">Category:</span> {product.category}</p>
-          </div>
+        {/* Price */}
+        <p className="text-orange-600 font-bold text-2xl mb-4">
+          ${product.price}
+        </p>
 
-          <div className="flex items-center mt-6">
-            <span className="text-yellow-500 text-xl">⭐</span>
-            <span className="ml-2 text-gray-800 font-medium">{product.rating} / 5</span>
-          </div>
+        {/* Description */}
+        <p className="text-gray-700 mb-4">{product.description}</p>
+
+        {/* Extra Info */}
+        <div className="space-y-2 text-gray-800">
+          <p><span className="font-semibold">Category:</span> {product.category}</p>
+          <p><span className="font-semibold">Brand:</span> {product.brand}</p>
+          <p>
+            <span className="font-semibold">Stock:</span>{" "}
+            {product.stock > 0 ? (
+              <span className="text-green-600">{product.stock} available</span>
+            ) : (
+              <span className="text-red-600">Out of stock</span>
+            )}
+          </p>
         </div>
 
-        <div className="mt-8 flex gap-4">
-          <button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-xl font-semibold shadow-md transition">
-            🛒 Add to Cart
-          </button>
-          <button className="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-3 px-6 rounded-xl font-semibold shadow-md transition">
-            ❤️ Wishlist
-          </button>
-        </div>
+        {/* Action Button */}
+        <button className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          Add to Cart
+        </button>
       </div>
     </div>
   );

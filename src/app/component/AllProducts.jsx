@@ -1,74 +1,51 @@
-// src/app/component/AllProducts.jsx
-import React from "react";
-import dbConnect, { collectionNameObj } from "@/lib/dbConnect";
+import dbConnect from "@/lib/dbConnect";
+import Product from "@/models/Product";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function AllProducts() {
-  // Get the products collection
-  const productsCollection = dbConnect(collectionNameObj.products);
+export const dynamic = "force-dynamic";
 
-  // Fetch all products
-  const products = await productsCollection.find({}).toArray();
+export default async function AllProducts() {
+  await dbConnect();
+  const products = await Product.find({}).lean();
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center pt-10 mb-4">Our Top Products</h1>
-    <div className="grid grid-cols-15 w-11/12 mx-auto my-10 gap-3 ">
-      
-      {products.map((item) => (
-        <div
-          className="col-span-15 md:col-span-5 lg:col-span-3 p-3 h-full border border-orange-500 gap-3"
-          key={item._id.toString()}
-        >
-          {/* <figure>
-            <Image
-              src={item.image || "/placeholder.png"}
-              width={250}
-              height={300}
-              alt={item.title}
-              unoptimized
-            />
-          </figure> */}
-          <figure className="w-full flex justify-center">
-            {/* Mobile: full width, auto height */}
-            <div className="block md:hidden w-full">
-              <Image
-                src={item.image || "/placeholder.png"}
-                alt={item.title}
-                width={500}
-                height={300}
-                className="w-full h-auto object-contain"
-                unoptimized
-              />
-            </div>
+    <div className="py-10">
+      <h1 className="text-3xl font-bold text-center mb-10">Our Top Products</h1>
 
-            {/* Desktop: fixed aspect ratio for consistency */}
-            <div className="hidden md:block relative w-full aspect-[16/9]">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 w-11/12 mx-auto">
+        {products.map((item) => (
+          <Link
+            key={item._id.toString()}
+            href={`/detail/${item.slug || item._id}`}
+            className="flex flex-col rounded-lg overflow-hidden shadow-md relative cursor-pointer bg-white dark:bg-gray-800
+                       transition-shadow duration-300 hover:shadow-[0_10px_20px_rgba(0,0,0,0.25)]"
+          >
+            {/* Image on top */}
+            <div className="relative w-full h-48">
               <Image
                 src={item.image || "/placeholder.png"}
                 alt={item.title}
                 fill
-                className="object-cover rounded-lg"
+                className="object-cover"
                 unoptimized
               />
             </div>
-          </figure>
 
-          <div className="flex justify-between items-center mt-4">
-            <div className="flex items-end justify-between w-full">
-              <div>
-                <h2 className="font-bold text-xl">{item.title}</h2>
-                <p className="font-bold text-xl text-orange-500">
-                  Price: ${item.price}
+            {/* Text info at bottom */}
+            <div className="p-3 flex flex-col justify-center">
+              <h2 className="font-bold text-lg">{item.title}</h2>
+              <p className="text-orange-500 font-bold mt-1">${item.price}</p>
+              {item.rating && (
+                <p className="text-yellow-500 mt-1">
+                  {"★".repeat(Math.round(item.rating))}{" "}
+                  {"☆".repeat(5 - Math.round(item.rating))}
                 </p>
-              </div>
-              <Link className="btn btn-xs font-bold hover:text-white text-orange-500 bg-white hover:bg-orange-700  " href={`/detail/${item._id.toString()}`}>Detail</Link>
+              )}
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

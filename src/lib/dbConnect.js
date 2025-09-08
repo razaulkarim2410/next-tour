@@ -1,15 +1,59 @@
-// src/lib/dbConnect.js
-import { MongoClient, ServerApiVersion } from "mongodb";
+// import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri, {
-  serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true },
-});
+// const MONGODB_URI = process.env.MONGODB_URI;
 
-export const collectionNameObj = {
-  products: "products",
-};
+// if (!MONGODB_URI) {
+//   throw new Error("❌ Please define the MONGODB_URI environment variable in .env.local");
+// }
 
-export default function dbConnect(collectionName) {
-  return client.db(process.env.MONGODB_DB).collection(collectionName);
+// let cached = global.mongoose;
+
+// if (!cached) {
+//   cached = global.mongoose = { conn: null, promise: null };
+// }
+
+// async function dbConnect() {
+//   if (cached.conn) {
+//     return cached.conn;
+//   }
+
+//   if (!cached.promise) {
+//     cached.promise = mongoose
+//       .connect(MONGODB_URI, {
+//         bufferCommands: false,
+//       })
+//       .then((mongoose) => mongoose);
+//   }
+
+//   cached.conn = await cached.promise;
+//   return cached.conn;
+// }
+
+// // ✅ Default export so `import dbConnect from "@/lib/dbConnect";` works
+// export default dbConnect;
+
+import mongoose from "mongoose";
+
+let cached = global.mongoose;
+
+if (!cached) cached = global.mongoose = { conn: null, promise: null };
+
+async function dbConnect() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      dbName: process.env.MONGODB_DB, // important!
+    };
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((mongoose) => mongoose);
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
 }
+
+export default dbConnect;
+
+
+
+
