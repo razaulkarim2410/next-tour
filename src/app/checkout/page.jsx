@@ -154,7 +154,7 @@ export default function CheckoutPage() {
             VAT included, where applicable
           </p>
           <button
-            onClick={() => router.push("/payment")}
+            onClick={() => router.push("/checkout/payment")}
             className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition"
           >
             Proceed to Pay
