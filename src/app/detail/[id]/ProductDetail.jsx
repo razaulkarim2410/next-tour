@@ -106,20 +106,16 @@ export default function ProductDetail({ product }) {
     router.push("/cart");
   };
 
-  const handleBuyNow = async () => {
-    if (!session) {
-      router.push(`/login?redirect=/detail/${product._id}`);
-      return;
-    }
+const handleBuyNow = () => {
+  if (!session) {
+    router.push(`/login?redirect=/detail/${product._id}`);
+    return;
+  }
 
-    await fetch("/api/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId: product._id, quantity }),
-    });
+  // ✅ Redirect to checkout with productId and qty
+  router.push(`/checkout?productId=${product._id}&qty=${quantity}`);
+};
 
-    router.push("/cart");
-  };
 
   return (
     <div className="w-11/12 mx-auto py-10 grid md:grid-cols-2 gap-10">
