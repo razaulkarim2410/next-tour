@@ -15,7 +15,10 @@ export default function CartPage() {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const res = await fetch("/api/cart");
+        const res = await fetch("/api/cart", {
+        method: "GET",            // ✅ explicitly set GET method
+        credentials: "include",   // ✅ crucial in production for sending session cookie
+      });
         if (!res.ok) throw new Error("Failed to fetch cart");
         const data = await res.json();
         setCart(data.items || []);
@@ -40,6 +43,7 @@ export default function CartPage() {
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // ✅ crucial in production
         body: JSON.stringify({
           productId: id,
           quantity: qty - cart.find((i) => i.product._id === id).quantity,
@@ -61,6 +65,7 @@ export default function CartPage() {
       const res = await fetch("/api/cart", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // ✅ crucial in production
         body: JSON.stringify({ productId: id }),
       });
 

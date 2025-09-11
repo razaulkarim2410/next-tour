@@ -1,25 +1,46 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { CreditCard, Smartphone, Banknote, Wallet } from "lucide-react";
 
 export default function PaymentPage() {
+  const { id } = useParams();
   const router = useRouter();
-  const [method, setMethod] = useState(""); // 🔹 nothing selected initially
+  const [order, setOrder] = useState(null);
+  const [method, setMethod] = useState(""); // selected payment method
 
-  const orderSummary = {
-    items: 1,
-    subtotal: 2814,
-    shipping: 135,
-    total: 2949,
-  };
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const res = await fetch(`/api/orders/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch order");
+        const data = await res.json();
+        setOrder(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchOrder();
+  }, [id]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!method) return alert("Please select a payment method");
+
+    // ⚡ Here you would integrate real payment gateway
     alert(`Proceeding with ${method} payment`);
+
+    // Optionally: call API to update order status
+    await fetch(`/api/orders/${id}/pay`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ method, status: "paid" }),
+    });
+
     router.push("/checkout/success");
   };
+
+  if (!order) return <p className="text-center mt-10">Loading order...</p>;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12">
@@ -37,18 +58,24 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("card")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "card" ? "border-orange-600 bg-green-50" : "border-gray-200"
+                method === "card"
+                  ? "border-orange-600 bg-green-50"
+                  : "border-gray-200"
               }`}
             >
               <CreditCard className="w-6 h-6 text-blue-600 mb-2" />
-              <span className="font-medium text-sm text-center">Credit/Debit Card</span>
+              <span className="font-medium text-sm text-center">
+                Credit/Debit Card
+              </span>
             </div>
 
             {/* Nagad */}
             <div
               onClick={() => setMethod("nagad")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "nagad" ? "border-orange-600 bg-green-50" : "border-gray-200"
+                method === "nagad"
+                  ? "border-orange-600 bg-green-50"
+                  : "border-gray-200"
               }`}
             >
               <Smartphone className="w-6 h-6 text-orange-600 mb-2" />
@@ -59,7 +86,9 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("bkash")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "bkash" ? "border-orange-600 bg-green-50" : "border-gray-200"
+                method === "bkash"
+                  ? "border-orange-600 bg-green-50"
+                  : "border-gray-200"
               }`}
             >
               <Smartphone className="w-6 h-6 text-pink-600 mb-2" />
@@ -70,11 +99,15 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("cod")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "cod" ? "border-orange-600 bg-green-50" : "border-gray-200"
+                method === "cod"
+                  ? "border-orange-600 bg-green-50"
+                  : "border-gray-200"
               }`}
             >
               <Wallet className="w-6 h-6 text-gray-600 mb-2" />
-              <span className="font-medium text-sm text-center">Cash on Delivery</span>
+              <span className="font-medium text-sm text-center">
+                Cash on Delivery
+              </span>
             </div>
           </div>
 
@@ -83,35 +116,43 @@ export default function PaymentPage() {
             {method === "card" && (
               <div className="space-y-4">
                 <h3 className="font-semibold">Enter Card Details</h3>
+                <div className="grid grid-cols-1">
+                  <p><span className="text-red-600 text-xl">*</span>Card Number</p>
                 <input
                   type="text"
                   placeholder="Card Number"
                   className="w-full border rounded px-3 py-2"
                 />
+                </div>
+                <div className="grid grid-cols-1">
+                  <p><span className="text-red-600 text-xl">*</span>Name on Card</p>
                 <input
                   type="text"
                   placeholder="Name on Card"
                   className="w-full border rounded px-3 py-2"
                 />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1">
+                    <p><span className="text-red-600 text-xl">*</span>Expiry date</p>
                   <input
                     type="text"
                     placeholder="MM/YY"
                     className="w-full border rounded px-3 py-2"
                   />
+                  </div>
+                   <div className="grid grid-cols-1">
+                    <p><span className="text-red-600 text-xl ">*</span>CVV</p>
                   <input
                     type="text"
                     placeholder="CVV"
                     className="w-full border rounded px-3 py-2"
                   />
+                   </div>
                 </div>
-                <p className="text-sm text-gray-500">
-                  We will save this card for your convenience. If required, you can remove it in
-                  the "Payment Options" section in your Account menu.
-                </p>
                 <button
                   onClick={handleConfirm}
-                   className="mt-2 bg-orange-600 text-white px-20 py-3 rounded-lg hover:bg-orange-700"
+                  className="mt-2 bg-orange-600 text-white px-28 py-3 rounded-lg hover:bg-orange-700"
                 >
                   Pay Now
                 </button>
@@ -128,7 +169,7 @@ export default function PaymentPage() {
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="mt-2 bg-orange-600 text-white px-20 py-3 rounded-lg hover:bg-orange-700"
+                  className="mt-2 bg-orange-600 text-white px-28 py-3 rounded-lg hover:bg-orange-700"
                 >
                   Pay Now
                 </button>
@@ -139,7 +180,7 @@ export default function PaymentPage() {
               <div className="space-y-3">
                 <h3 className="font-semibold">bKash Payment</h3>
                 <p className="text-gray-700 text-sm">
-                  1) First-time users: Enter Wallet Number & OTP to save account. <br />
+                   1) First-time users: Enter Wallet Number & OTP to save account. <br />
                   2) Returning users: Enter PIN to make payment. <br />
                   Disclaimer: You will be redirected back to Checkout for first transaction. <br />
                   <br />
@@ -151,7 +192,7 @@ export default function PaymentPage() {
                 </p>
                 <button
                   onClick={handleConfirm}
-                   className="mt-2 bg-orange-600 text-white px-20 py-3 rounded-lg hover:bg-orange-700"
+                  className="mt-2 bg-orange-600 text-white px-28 py-3 rounded-lg hover:bg-orange-700"
                 >
                   Pay Now
                 </button>
@@ -169,7 +210,7 @@ export default function PaymentPage() {
                 </p>
                 <button
                   onClick={handleConfirm}
-                   className="mt-2 bg-orange-600 text-white px-20 py-3 rounded-lg hover:bg-orange-700"
+                  className="mt-2 bg-orange-600 text-white px-24 py-3 rounded-lg hover:bg-orange-700"
                 >
                   Confirm Order
                 </button>
@@ -183,13 +224,14 @@ export default function PaymentPage() {
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
           <div className="space-y-2 text-gray-700">
             <p>
-              Subtotal ({orderSummary.items} item + shipping):{" "}
-              <span className="font-semibold">$ {orderSummary.subtotal + orderSummary.shipping}</span>
+              Subtotal ({order.items.length} item
+              {order.items.length > 1 ? "s" : ""}):{" "}
+              <span className="font-semibold">$ {order.subtotal.toFixed(2)}</span>
             </p>
-            <p>Shipping Fee: $ {orderSummary.shipping}</p>
-            <p className="text-lg font-bold">Total Amount: ${orderSummary.total}</p>
+            <p>Shipping Fee: $ {order.shipping.toFixed(2)}</p>
+            {order.discount > 0 && <p>Discount: -$ {order.discount.toFixed(2)}</p>}
+            <p className="text-lg font-bold">Total Amount: $ {order.total.toFixed(2)}</p>
           </div>
-          {/* 🚫 no confirm/pay button here */}
         </div>
       </div>
     </div>
