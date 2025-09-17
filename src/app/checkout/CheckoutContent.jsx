@@ -3,19 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function CheckoutPage() {
+export default function CheckoutContent() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [voucher, setVoucher] = useState("");
 
-  // 🔹 Shipping info state
+  // Shipping info state
   const [shippingInfo, setShippingInfo] = useState({
     name: "Razaul Karim",
-    phone: "017XXXXXXXX",
+    phone: "+8801XXXXXXXXX",
     address: "purbadhala bazar, Purbadhola Saddar, Netrokona, Mymensingh",
   });
 
-  // 🔹 Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
@@ -24,7 +23,6 @@ export default function CheckoutPage() {
   const productId = params.get("productId");
   const qty = parseInt(params.get("qty")) || 1;
 
-  // 🔹 Fetch items (cart or single product)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,15 +30,15 @@ export default function CheckoutPage() {
           const res = await fetch(`/api/products/${productId}`);
           if (!res.ok) throw new Error("Failed to fetch product");
           const product = await res.json();
-          setItems([{ product, quantity: qty }]);
+          setItems(product ? [{ product, quantity: qty }] : []);
         } else {
           const res = await fetch("/api/cart");
           if (!res.ok) throw new Error("Failed to fetch cart");
           const data = await res.json();
-          setItems(data.items || []);
+          setItems(Array.isArray(data.items) ? data.items.filter(i => i?.product) : []);
         }
       } catch (err) {
-        console.error(err);
+        console.error("❌ Failed to fetch checkout data:", err);
         setItems([]);
       } finally {
         setLoading(false);
@@ -49,22 +47,28 @@ export default function CheckoutPage() {
     fetchData();
   }, [productId, qty]);
 
-  // 🔹 Totals
-  const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  // ✅ SAFE subtotal calculation
+  const subtotal = items.reduce((sum, i) => {
+    const price = i?.product?.price ?? 0;
+    const quantity = i?.quantity ?? 0;
+    return sum + price * quantity;
+  }, 0);
+
   const shipping = subtotal > 2000 ? 0 : 100;
   const discount = voucher === "DISCOUNT50" ? 50 : 0;
   const total = subtotal + shipping - discount;
 
-  // 🔹 Save Order & Redirect
   const handleProceed = async () => {
     try {
       const orderData = {
-        items: items.map((i) => ({
-          productId: i.product._id,
-          name: i.product.title,
-          price: i.product.price,
-          quantity: i.quantity,
-        })),
+        items: items
+          .filter((i) => i?.product)
+          .map((i) => ({
+            productId: i.product._id,
+            name: i.product.title,
+            price: i.product.price,
+            quantity: i.quantity,
+          })),
         subtotal,
         shipping,
         discount,
@@ -113,28 +117,33 @@ export default function CheckoutPage() {
         </div>
 
         {/* Products */}
-        {items.map(({ product, quantity }) => (
-          <div
-            key={product._id}
-            className="p-6 border rounded-lg shadow-md bg-white flex gap-6"
-          >
-            <img
-              src={product.image}
-              alt={product.title}
-              className="w-24 h-24 object-cover rounded"
-            />
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg">{product.title}</h3>
-              <p className="text-gray-600">${product.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-500">Category: {product.category}</p>
-              <p className="text-sm text-gray-500">Brand: {product.brand}</p>
+        {items.length === 0 && (
+          <p className="text-gray-500 text-center py-6">No items in checkout.</p>
+        )}
+        {items.map(({ product, quantity }) =>
+          product ? (
+            <div
+              key={product._id}
+              className="p-6 border rounded-lg shadow-md bg-white flex gap-6"
+            >
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-24 h-24 object-cover rounded"
+              />
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg">{product.title}</h3>
+                <p className="text-gray-600">${product.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-500">Category: {product.category}</p>
+                <p className="text-sm text-gray-500">Brand: {product.brand}</p>
+              </div>
+              <div className="flex flex-col justify-center items-center">
+                <p className="font-semibold">Qty</p>
+                <p className="text-gray-700">{quantity}</p>
+              </div>
             </div>
-            <div className="flex flex-col justify-center items-center">
-              <p className="font-semibold">Qty</p>
-              <p className="text-gray-700">{quantity}</p>
-            </div>
-          </div>
-        ))}
+          ) : null
+        )}
       </div>
 
       {/* RIGHT: Summary */}
@@ -181,13 +190,14 @@ export default function CheckoutPage() {
           <button
             onClick={handleProceed}
             className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition"
+            disabled={items.length === 0}
           >
             Proceed to Pay
           </button>
         </div>
       </div>
 
-      {/* Modal for Editing Shipping Info */}
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-96 shadow-lg">

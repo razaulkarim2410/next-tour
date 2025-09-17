@@ -1,5 +1,6 @@
 // src/app/all-products/page.jsx
-import AllProducts from "../component/AllProducts";
+import AllProducts from "@/components/AllProducts";
+
 
 export default function AllProductsPage() {
   return (

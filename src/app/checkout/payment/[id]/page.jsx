@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,6 +11,7 @@ export default function PaymentPage() {
   const [order, setOrder] = useState(null);
   const [method, setMethod] = useState(""); // selected payment method
 
+  // Fetch order data
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -27,10 +29,8 @@ export default function PaymentPage() {
   const handleConfirm = async () => {
     if (!method) return alert("Please select a payment method");
 
-    // ⚡ Here you would integrate real payment gateway
     alert(`Proceeding with ${method} payment`);
 
-    // Optionally: call API to update order status
     await fetch(`/api/orders/${id}/pay`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -41,6 +41,13 @@ export default function PaymentPage() {
   };
 
   if (!order) return <p className="text-center mt-10">Loading order...</p>;
+
+  // Safe calculations
+  const itemCount = order?.items?.length ?? 0;
+  const subtotal = Number(order?.subtotal ?? 0);
+  const shipping = Number(order?.shipping ?? 0);
+  const discount = Number(order?.discount ?? 0);
+  const total = Number(order?.total ?? subtotal + shipping - discount);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12">
@@ -58,9 +65,7 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("card")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "card"
-                  ? "border-orange-600 bg-green-50"
-                  : "border-gray-200"
+                method === "card" ? "border-orange-600 bg-green-50" : "border-gray-200"
               }`}
             >
               <CreditCard className="w-6 h-6 text-blue-600 mb-2" />
@@ -73,9 +78,7 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("nagad")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "nagad"
-                  ? "border-orange-600 bg-green-50"
-                  : "border-gray-200"
+                method === "nagad" ? "border-orange-600 bg-green-50" : "border-gray-200"
               }`}
             >
               <Smartphone className="w-6 h-6 text-orange-600 mb-2" />
@@ -86,9 +89,7 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("bkash")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "bkash"
-                  ? "border-orange-600 bg-green-50"
-                  : "border-gray-200"
+                method === "bkash" ? "border-orange-600 bg-green-50" : "border-gray-200"
               }`}
             >
               <Smartphone className="w-6 h-6 text-pink-600 mb-2" />
@@ -99,9 +100,7 @@ export default function PaymentPage() {
             <div
               onClick={() => setMethod("cod")}
               className={`p-4 border rounded-lg cursor-pointer flex flex-col items-center justify-center ${
-                method === "cod"
-                  ? "border-orange-600 bg-green-50"
-                  : "border-gray-200"
+                method === "cod" ? "border-orange-600 bg-green-50" : "border-gray-200"
               }`}
             >
               <Wallet className="w-6 h-6 text-gray-600 mb-2" />
@@ -111,48 +110,41 @@ export default function PaymentPage() {
             </div>
           </div>
 
-          {/* Details under selection */}
+          {/* Payment method details */}
           <div className="mt-6">
             {method === "card" && (
               <div className="space-y-4">
                 <h3 className="font-semibold">Enter Card Details</h3>
-                <div className="grid grid-cols-1">
-                  <p><span className="text-red-600 text-xl">*</span>Card Number</p>
+                <div>
+                  <p className="items-center justify-center"> <span className="text-xl text-red-500">*</span>Card Number</p>
                 <input
                   type="text"
                   placeholder="Card Number"
                   className="w-full border rounded px-3 py-2"
                 />
-                </div>
-                <div className="grid grid-cols-1">
-                  <p><span className="text-red-600 text-xl">*</span>Name on Card</p>
+                  </div>
+                <div>
+                  <p className="items-center justify-center"> <span className="text-xl text-red-500">*</span>Name on Card</p>
                 <input
                   type="text"
                   placeholder="Name on Card"
                   className="w-full border rounded px-3 py-2"
                 />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid grid-cols-1">
-                    <p><span className="text-red-600 text-xl">*</span>Expiry date</p>
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="w-full border rounded px-3 py-2"
-                  />
                   </div>
-                   <div className="grid grid-cols-1">
-                    <p><span className="text-red-600 text-xl ">*</span>CVV</p>
-                  <input
-                    type="text"
-                    placeholder="CVV"
-                    className="w-full border rounded px-3 py-2"
-                  />
+                
+                <div className="flex gap-4">
+                  <div>
+                    <p className="items-center justify-center"> <span className="text-xl text-red-500">*</span>Expiry date</p>
+                  <input type="text" placeholder="MM/YY" className="w-full border rounded px-3 py-2" />
+                  </div>
+                   <div>
+                    <p className="items-center justify-center"> <span className="text-xl text-red-500">*</span>CVV</p>
+                  <input type="text" placeholder="CVV" className="w-full border rounded px-3 py-2" />
                    </div>
                 </div>
                 <button
                   onClick={handleConfirm}
-                  className="mt-2 bg-orange-600 text-white px-28 py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
                 >
                   Pay Now
                 </button>
@@ -163,13 +155,13 @@ export default function PaymentPage() {
               <div className="space-y-3">
                 <h3 className="font-semibold">Nagad Payment</h3>
                 <p className="text-gray-700 text-sm">
-                  1. You have an activated Nagad Account <br />
-                  2. You are able to receive an OTP on your registered Mobile Number. <br />
-                  3. You have sufficient balance in your account to carry out the transaction
+                  1. Activated Nagad Account <br />
+                  2. Receive OTP on registered Mobile <br />
+                  3. Sufficient balance
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="mt-2 bg-orange-600 text-white px-28 py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
                 >
                   Pay Now
                 </button>
@@ -180,19 +172,13 @@ export default function PaymentPage() {
               <div className="space-y-3">
                 <h3 className="font-semibold">bKash Payment</h3>
                 <p className="text-gray-700 text-sm">
-                   1) First-time users: Enter Wallet Number & OTP to save account. <br />
-                  2) Returning users: Enter PIN to make payment. <br />
-                  Disclaimer: You will be redirected back to Checkout for first transaction. <br />
-                  <br />
-                  Please Note: <br />
-                  - You have an activated bKash account <br />
-                  - Ensure sufficient balance <br />
-                  - Ensure OTP reception on your mobile <br />
-                  - Only one bKash account can be linked per NextTour account
+                  1. First-time: Wallet Number & OTP <br />
+                  2. Returning: PIN to pay <br />
+                  Only one bKash account per user
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="mt-2 bg-orange-600 text-white px-28 py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
                 >
                   Pay Now
                 </button>
@@ -203,14 +189,11 @@ export default function PaymentPage() {
               <div className="space-y-3">
                 <h3 className="font-semibold">Cash on Delivery</h3>
                 <p className="text-gray-700 text-sm">
-                  - Pay in cash upon receiving your parcel. <br />
-                  - Confirm delivery status is 'Out for Delivery'. <br />
-                  - Check airway bill to ensure parcel is from NextTour. <br />
-                  - Confirm order number, sender info, and tracking before paying courier.
+                  Pay in cash upon receiving your parcel.
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="mt-2 bg-orange-600 text-white px-24 py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
                 >
                   Confirm Order
                 </button>
@@ -219,18 +202,22 @@ export default function PaymentPage() {
           </div>
         </div>
 
-        {/* Right: Order Summary */}
+        {/* Right: Payment Summary */}
         <div className="bg-white shadow rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+          <h2 className="text-xl font-semibold mb-4">Payment Summary</h2>
           <div className="space-y-2 text-gray-700">
             <p>
-              Subtotal ({order.items.length} item
-              {order.items.length > 1 ? "s" : ""}):{" "}
-              <span className="font-semibold">$ {order.subtotal.toFixed(2)}</span>
+              Subtotal ({itemCount} item{itemCount > 1 ? "s" : ""}):{" "}
+              <span className="font-semibold">$ {subtotal.toFixed(2)}</span>
             </p>
-            <p>Shipping Fee: $ {order.shipping.toFixed(2)}</p>
-            {order.discount > 0 && <p>Discount: -$ {order.discount.toFixed(2)}</p>}
-            <p className="text-lg font-bold">Total Amount: $ {order.total.toFixed(2)}</p>
+            <p>Shipping Fee: $ {shipping.toFixed(2)}</p>
+            {discount > 0 && <p>Discount: -$ {discount.toFixed(2)}</p>}
+            <p className="text-lg font-bold">Total Amount: $ {total.toFixed(2)}</p>
+            {method && (
+              <p className="mt-2 text-sm">
+                <span className="font-medium">Selected Payment:</span> {method.toUpperCase()}
+              </p>
+            )}
           </div>
         </div>
       </div>

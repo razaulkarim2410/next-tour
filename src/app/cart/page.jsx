@@ -1,127 +1,69 @@
+
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-import { X, Heart, Trash2 } from "lucide-react"; // ✅ nice icons
+import { X, Heart, Trash2 } from "lucide-react";
 
 export default function CartPage() {
-  const [cart, setCart] = useState([]);
-  const [voucher, setVoucher] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [wishlistModal, setWishlistModal] = useState(null); // product id or null
-  const [deleteModal, setDeleteModal] = useState(null); // product id or null
+  const { cart = [], loading, loadingIds, updateQty, removeFromCart } = useCart();
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const res = await fetch("/api/cart", {
-        method: "GET",            // ✅ explicitly set GET method
-        credentials: "include",   // ✅ crucial in production for sending session cookie
-      });
-        if (!res.ok) throw new Error("Failed to fetch cart");
-        const data = await res.json();
-        setCart(data.items || []);
-      } catch (err) {
-        console.error(err);
-        setCart([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCart();
-  }, []);
+  const [voucher, setVoucher] = useState("");
+  const [wishlistModal, setWishlistModal] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
 
-  const updateQty = async (id, qty) => {
-    try {
-      setCart((prev) =>
-        prev.map((i) =>
-          i.product._id === id ? { ...i, quantity: qty } : i
-        )
-      ); // ✅ Optimistic UI
+  // ✅ Filter null/undefined items first
+  const validCart = cart.filter((item) => item?.product);
 
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // ✅ crucial in production
-        body: JSON.stringify({
-          productId: id,
-          quantity: qty - cart.find((i) => i.product._id === id).quantity,
-        }),
-      });
+  // ✅ Safe subtotal calculation
+  const subtotal = validCart.reduce((sum, item) => {
+    const price = Number(item?.product?.price) || 0; // fallback 0 if missing
+    const qty = Number(item?.quantity) || 0;        // fallback 0 if missing
+    return sum + price * qty;
+  }, 0);
 
-      if (!res.ok) throw new Error("Failed to update cart");
-      const data = await res.json();
-      setCart(data.items || []);
-    } catch (err) {
-      console.error("Update cart error:", err);
-    }
-  };
-
-  const removeFromCart = async (id) => {
-    try {
-      setCart((prev) => prev.filter((i) => i.product._id !== id)); // ✅ Optimistic remove
-
-      const res = await fetch("/api/cart", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // ✅ crucial in production
-        body: JSON.stringify({ productId: id }),
-      });
-
-      if (!res.ok) throw new Error("Failed to remove item");
-      const data = await res.json();
-      setCart(data.items || []);
-    } catch (err) {
-      console.error("Remove item error:", err);
-    }
-  };
-
-  const subtotal = Array.isArray(cart)
-    ? cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0)
-    : 0;
-
-  const shipping = Array.isArray(cart) && cart.length > 0 ? 135 : 0;
+  const shipping = validCart.length > 0 ? 100 : 0;
   const discount = voucher === "DISCOUNT50" ? 50 : 0;
   const total = subtotal + shipping - discount;
 
-  const handlePay = () => {
-    router.push("/checkout");
-  };
-
-  if (loading) {
-    return <p className="text-center mt-10">Loading cart...</p>;
-  }
-
-  if (!Array.isArray(cart) || cart.length === 0) {
-    return <p className="text-center mt-10">Cart is empty</p>;
-  }
+  if (loading) return <p className="text-center mt-10">Loading cart...</p>;
+  if (!validCart.length) return <p className="text-center mt-10">Cart is empty</p>;
 
   return (
     <div className="w-11/12 mx-auto py-10 grid md:grid-cols-3 gap-8">
       {/* Left: Cart Items */}
       <div className="md:col-span-2 space-y-6">
-        {cart.map(({ product, quantity }) => (
+        {validCart.map(({ product, quantity }) => (
           <div
             key={product._id}
             className="flex items-center gap-4 p-4 border rounded-lg shadow-sm relative"
           >
             <img
-              src={product.image}
+              src={product?.image || "/placeholder.png"}
               className="w-24 h-24 object-cover rounded"
-              alt={product.title}
+              alt={product?.title || "Product"}
             />
             <div className="flex-1">
-              <h2 className="font-semibold">{product.title}</h2>
-              <p className="text-gray-600">$ {product.price.toFixed(2)}</p>
+              <h2 className="font-semibold">{product?.title || "Unnamed Product"}</h2>
+              <p className="text-gray-600">
+                $ {(Number(product?.price) || 0).toFixed(2)}
+              </p>
 
-              {/* ✅ Extra product info */}
+              {/* Extra product info */}
               <div className="text-sm text-gray-500 mt-1 space-y-1">
-                <p><span className="font-medium">Brand:</span> {product.brand}</p>
-                <p><span className="font-medium">Category:</span> {product.category}</p>
+                <p>
+                  <span className="font-medium">Brand:</span> {product?.brand || "N/A"}
+                </p>
+                <p>
+                  <span className="font-medium">Category:</span>{" "}
+                  {product?.category || "N/A"}
+                </p>
                 <p>
                   <span className="font-medium">Stock:</span>{" "}
-                  {product.stock > 0 ? (
+                  {product?.stock > 0 ? (
                     <span className="text-green-600">{product.stock} available</span>
                   ) : (
                     <span className="text-red-600">Out of stock</span>
@@ -132,22 +74,22 @@ export default function CartPage() {
               {/* Quantity buttons */}
               <div className="flex items-center gap-2 mt-3">
                 <button
+                  disabled={loadingIds.includes(product._id)}
                   onClick={() => updateQty(product._id, Math.max(1, quantity - 1))}
-                  className="px-2 py-1 bg-gray-200 rounded"
+                  className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50"
                 >
-                  -
+                  {loadingIds.includes(product._id) ? "..." : "-"}
                 </button>
                 <span>{quantity}</span>
                 <button
+                  disabled={loadingIds.includes(product._id)}
                   onClick={() => updateQty(product._id, quantity + 1)}
-                  className="px-2 py-1 bg-gray-200 rounded"
+                  className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50"
                 >
-                  +
+                  {loadingIds.includes(product._id) ? "..." : "+"}
                 </button>
               </div>
             </div>
-
-
 
             {/* Action Icons */}
             <div className="flex flex-col gap-2">
@@ -173,7 +115,7 @@ export default function CartPage() {
         <h2 className="text-lg font-bold mb-4">Order Summary</h2>
 
         <div className="flex justify-between mb-2 text-gray-700">
-          <span>Subtotal ({cart.length} items)</span>
+          <span>Subtotal ({validCart.length} items)</span>
           <span>$ {subtotal.toFixed(2)}</span>
         </div>
 
@@ -214,10 +156,10 @@ export default function CartPage() {
         </div>
 
         <button
-          onClick={handlePay}
+          onClick={() => router.push("/checkout")}
           className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition"
         >
-          PROCEED TO CHECKOUT ({cart.length})
+          PROCEED TO CHECKOUT ({validCart.length})
         </button>
       </div>
 
