@@ -6,7 +6,9 @@ const categories = [
   { name: "Furniture", slug: "furniture", image: "/images/furniture.jpg" },
   { name: "Accessories", slug: "accessories", image: "/images/accessories.jpg" },
   { name: "Wearables", slug: "wearables", image: "/images/wearables.jpg" },
-  // { name: "Books", slug: "books", image: "/images/books.jpg" },
+  { name: "Mens Fashion", slug: "mens-fashion", image: "/images/mens-fashion.jpg" },
+  { name: "Women's World", slug: "women's-world", image: "/images/women's-world.jpg" },
+  { name: "Baby Collection", slug: "baby-collection", image: "/images/baby-collection.jpg" },
 ];
 
 export default function CategorySection() {
