@@ -18,7 +18,7 @@ export default function AllProductsClient({ products = [], category }) {
 
   return (
     <div className="py-10">
-      <h1 className="text-3xl font-bold text-center mb-10">
+      <h1 className="text-3xl font-xl w-11/12 mx-auto  mb-10">
         {category ? `${category} Products` : "Our Top Products"}
       </h1>
 
@@ -63,7 +63,7 @@ export default function AllProductsClient({ products = [], category }) {
         <div className="flex justify-center mt-8">
           <button
             onClick={handleShowMore}
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition"
+            className="px-26 py-3 bg-orange-600 text-white font-semibold  hover:bg-orange-700 transition"
           >
             Show More
           </button>

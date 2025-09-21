@@ -189,7 +189,7 @@ export default function CheckoutContent() {
           </div>
           <button
             onClick={handleProceed}
-            className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition"
+            className="w-full bg-orange-600 text-white py-3  hover:bg-orange-700 disabled:opacity-50"
             disabled={items.length === 0}
           >
             Proceed to Pay

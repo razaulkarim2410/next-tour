@@ -144,7 +144,7 @@ export default function PaymentPage() {
                 </div>
                 <button
                   onClick={handleConfirm}
-                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3  hover:bg-orange-700 disabled:opacity-50"
                 >
                   Pay Now
                 </button>
@@ -161,7 +161,7 @@ export default function PaymentPage() {
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3 hover:bg-orange-700 disabled:opacity-50"
                 >
                   Pay Now
                 </button>
@@ -178,7 +178,7 @@ export default function PaymentPage() {
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3  hover:bg-orange-700 disabled:opacity-50"
                 >
                   Pay Now
                 </button>
@@ -193,7 +193,7 @@ export default function PaymentPage() {
                 </p>
                 <button
                   onClick={handleConfirm}
-                  className="w-full mt-2 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700"
+                  className="w-full mt-2 bg-orange-600 text-white py-3  hover:bg-orange-700 disabled:opacity-50"
                 >
                   Confirm Order
                 </button>

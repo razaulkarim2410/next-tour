@@ -179,7 +179,7 @@ export default function ProductDetail({ product }) {
             <button
               onClick={handleAddToCart}
               disabled={loading || product.stock <= 0}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-12 py-3 bg-orange-600 text-white  hover:bg-orange-700 disabled:opacity-50"
             >
               {loading ? <Loader2 className="animate-spin w-5 h-5" /> : <ShoppingCart size={20} />}
               Add to Cart
@@ -188,7 +188,7 @@ export default function ProductDetail({ product }) {
             <button
               onClick={handleBuyNow}
               disabled={product.stock <= 0}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-12 py-3 bg-green-600 text-white  hover:bg-green-700 disabled:opacity-50"
             >
               <Zap size={20} />
               Buy Now
@@ -261,7 +261,7 @@ export default function ProductDetail({ product }) {
             </label>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-8 py-2 bg-orange-600 text-white  hover:bg-orange-700 disabled:opacity-50"
             >
               Submit Review
             </button>

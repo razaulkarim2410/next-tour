@@ -157,7 +157,7 @@ export default function CartPage() {
 
         <button
           onClick={() => router.push("/checkout")}
-          className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition"
+          className="w-full bg-orange-600 text-white py-3  hover:bg-orange-700 disabled:opacity-50"
         >
           PROCEED TO CHECKOUT ({validCart.length})
         </button>
