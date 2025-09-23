@@ -40,7 +40,7 @@ export default function FindUs() {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-lg font-bold hover:text-orange-500 transition-colors"
+            className="flex items-center gap-2 text-l hover:text-orange-500 transition-colors"
           >
             {link.icon} {link.name}
           </a>
