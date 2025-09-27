@@ -24,6 +24,7 @@
     "mongoose": "^8.18.0",
     "next": "15.5.0",
     "next-auth": "^4.24.11",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.1",
     "postcss": "^8.5.6",
     "react": "19.1.0",
@@ -31,8 +32,10 @@
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
     "react-responsive-carousel": "^3.2.23",
+    "sslcommerz-lts": "^1.2.0",
     "sweetalert2": "^11.23.0",
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "^4.1.12",
+    "undici": "^7.16.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

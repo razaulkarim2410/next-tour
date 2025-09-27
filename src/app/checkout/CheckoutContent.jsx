@@ -1,28 +1,33 @@
+
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Swal from "sweetalert2";
+import { initiatePayment } from "@/utils/initiatePayment";
 
 export default function CheckoutContent() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [voucher, setVoucher] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Shipping info state
   const [shippingInfo, setShippingInfo] = useState({
     name: "Razaul Karim",
     phone: "+8801XXXXXXXXX",
     address: "purbadhala bazar, Purbadhola Saddar, Netrokona, Mymensingh",
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const router = useRouter();
   const params = useSearchParams();
+  const { data: session } = useSession();
 
   const productId = params.get("productId");
   const qty = parseInt(params.get("qty")) || 1;
 
+  // 🔄 Fetch cart/product data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,7 +52,7 @@ export default function CheckoutContent() {
     fetchData();
   }, [productId, qty]);
 
-  // ✅ SAFE subtotal calculation
+  // 🧮 Totals
   const subtotal = items.reduce((sum, i) => {
     const price = i?.product?.price ?? 0;
     const quantity = i?.quantity ?? 0;
@@ -58,37 +63,45 @@ export default function CheckoutContent() {
   const discount = voucher === "DISCOUNT50" ? 50 : 0;
   const total = subtotal + shipping - discount;
 
+  // 🚀 Proceed handler with full error handling
   const handleProceed = async () => {
     try {
-      const orderData = {
-        items: items
-          .filter((i) => i?.product)
-          .map((i) => ({
-            productId: i.product._id,
-            name: i.product.title,
-            price: i.product.price,
-            quantity: i.quantity,
-          })),
-        subtotal,
-        shipping,
-        discount,
-        total,
-        customer: shippingInfo,
-      };
+      if (!session) {
+        return Swal.fire({
+          icon: "warning",
+          title: "Login Required",
+          text: "You must be logged in to proceed with payment.",
+        });
+      }
 
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
+      if (!Array.isArray(items) || items.length === 0) {
+        return Swal.fire({
+          icon: "info",
+          title: "Cart is Empty",
+          text: "Please add some items before proceeding to checkout.",
+        });
+      }
 
-      if (!res.ok) throw new Error("Failed to save order");
+      // const paymentUrl = await initiatePayment(items, total);
+      const paymentUrl = await initiatePayment(items, total);
 
-      const newOrder = await res.json();
-      router.push(`/checkout/payment/${newOrder._id}`);
+
+      if (paymentUrl) {
+        window.location.href = paymentUrl; // SSLCommerz redirect
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Payment Error",
+          text: "Failed to get payment link. Please try again later.",
+        });
+      }
     } catch (err) {
-      console.error("❌ Order creation failed:", err);
-      alert("Something went wrong. Please try again.");
+      console.error("handleProceed error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        text: err?.message || "We couldn't initiate the payment. Please try again later.",
+      });
     }
   };
 
@@ -189,7 +202,7 @@ export default function CheckoutContent() {
           </div>
           <button
             onClick={handleProceed}
-            className="w-full bg-orange-600 text-white py-3  hover:bg-orange-700 disabled:opacity-50"
+            className="w-full bg-orange-600 text-white py-3 hover:bg-orange-700 disabled:opacity-50"
             disabled={items.length === 0}
           >
             Proceed to Pay
@@ -259,4 +272,5 @@ export default function CheckoutContent() {
       )}
     </div>
   );
+
 }
