@@ -1,5 +1,5 @@
 import { getOrderById } from "@/lib/orders"; // your backend fetching function
-import OrderActions from "@/components/OrderActions";
+import OrderActions from "./OrderActions";
 
 export default async function OrderDetailPage({ params }) {
   const { id } = params;
