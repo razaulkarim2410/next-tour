@@ -5,11 +5,13 @@ import AllProducts from "@/components/AllProducts";
 import Banner from "@/components/Banner";  // ✅ Import Banner
 import Footer from "@/components/Footer";
 import CategorySection from "@/components/CategorySection";
+import FlashSale from "@/components/FlashSale";
 
 export default function Home() {
   return (
     <main>
-      <Banner />   {/* ✅ Will show only on homepage */}
+      <Banner />
+      <FlashSale/>
       <CategorySection/>
       <AllProducts />
       <Footer></Footer>

@@ -1,10 +1,32 @@
+// import mongoose from "mongoose";
+
+// const ProductSchema = new mongoose.Schema(
+//   {
+//     title: { type: String, required: true, trim: true },
+//     description: { type: String, required: true },
+//     price: { type: Number, required: true, min: 0 },
+//     image: { type: String, default: "/placeholder.png" },
+//     category: { type: String, default: "General", trim: true },
+//     brand: { type: String, trim: true },
+//     stock: { type: Number, default: 0, min: 0 },
+//     rating: { type: Number, default: 0, min: 0, max: 5 },
+//     slug: { type: String, unique: true, sparse: true, trim: true },
+//   },
+//   { timestamps: true }
+// );
+
+// const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
+
+// export default Product;
+
 import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
-    price: { type: Number, required: true, min: 0 },
+    price: { type: Number, required: true, min: 0 }, // discounted price (if flash sale)
+    originalPrice: { type: Number, min: 0 }, // normal/original price before discount
     image: { type: String, default: "/placeholder.png" },
     category: { type: String, default: "General", trim: true },
     brand: { type: String, trim: true },
@@ -15,6 +37,7 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
+const Product =
+  mongoose.models.Product || mongoose.model("Product", ProductSchema);
 
 export default Product;
