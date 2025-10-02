@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-// import logo from "@/public/logo.png"; // adjust path to your logo
-import FindUs from "@/components/FindUs";   // adjust path to your FindUs component
 import React from "react";
+import FindUs from "@/components/FindUs"; // adjust path if needed
 
 export default function Footer() {
   return (
@@ -14,16 +13,15 @@ export default function Footer() {
         <div>
           <div className="flex gap-3 items-center justify-evenly sm:text-center">
             <div className="text-2xl flex items-center gap-2">
-
-              <Image src={"/assets/logo.png"} width={25} height={25} alt="Logo" />
+              <Image src="/assets/logo.png" width={25} height={25} alt="Logo" />
               NextTour
             </div>
-
           </div>
-          <p className="text-white dark:text-gray-300">Email: privacy@hrpulse.com</p>
+          <p className="text-white dark:text-gray-300">Email: farzankarim2410@gmail.com</p>
           <p className="text-white dark:text-gray-300">
-            Address: NextTour Inc., 123 Tech Lane, <br /> City Center, CA 90001, USA
+            Address: 123 Market Street, <br /> Dhaka, Bangladesh 
           </p>
+          <p>Mobile: +880-1912278356</p>
         </div>
 
         {/* Company & Legal Links */}
@@ -54,9 +52,68 @@ export default function Footer() {
         </div>
       </footer>
 
+      {/* Payment Methods Section */}
+      <div className="bg-orange-600 dark:bg-orange-700 py-6">
+        <h6 className="text-white text-center mb-4 text-xl font-semibold">
+        Payment Methods
+        </h6>
+        <div className="flex flex-wrap justify-center items-center gap-6">
+          <Image
+            src="/images/bkash.png"
+            alt="Bkash"
+            width={80}
+            height={20}
+            className="h-10 w-auto object-contain bg-white"
+          />
+          <Image
+            src="/images/nagad.jpeg"
+            alt="Nagad"
+            width={80}
+            height={50}
+            className="h-10 w-auto object-contain"
+          />
+          <Image
+            src="/images/bank.jpeg"
+            alt="Bank"
+            width={80}
+            height={50}
+            className="h-10 w-auto object-contain"
+          />
+          <Image
+            src="/images/rocket.jpeg"
+            alt="Rocket"
+            width={80}
+            height={50}
+            className="h-10 w-auto object-contain"
+          />
+          <Image
+            src="/images/visacard.png"
+            alt="Visacard"
+            width={80}
+            height={50}
+            className="h-10 w-auto object-contain"
+          />
+          <Image
+            src="/images/mastercard.png"
+            alt="Mastercard"
+            width={80}
+            height={50}
+            className="h-10 w-auto object-contain"
+          />
+          <Image
+            src="/images/cash.jpg"
+            alt="Cash"
+            width={80}
+            height={50}
+            className="h-10 w-auto object-contain"
+          />
+        </div>
+      </div>
+
+
       {/* Copyright */}
       <div className="bg-orange-600 dark:bg-orange-700 text-center text-white dark:text-gray-100 pb-1">
-        © 2025  NextTour. All rights reserved.
+        © 2025 NextTour. All rights reserved.
       </div>
     </div>
   );
