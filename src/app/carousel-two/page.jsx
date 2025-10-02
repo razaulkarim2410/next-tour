@@ -1,29 +1,29 @@
 "use client";
-import { ShoppingBag, ShoppingCart, CreditCard } from "lucide-react";
+import { Heart, Package, Truck } from "lucide-react";
 import Link from "next/link";
 
-export default function CarouselOnePage() {
+export default function CarouselTwoPage() {
   const steps = [
     {
       id: 1,
-      title: "Browse Products",
+      title: "Add to Wishlist",
       description:
-        "Explore a wide range of the latest trends in fashion, electronics, and lifestyle—all at your fingertips.",
-      icon: <ShoppingBag className="w-10 h-10 text-orange-600" />,
+        "Save your favorite items in one place. Never lose track of products you love.",
+      icon: <Heart className="w-10 h-10 text-pink-600" />,
     },
     {
       id: 2,
-      title: "Add to Cart",
+      title: "Place Your Order",
       description:
-        "Select your favorite items and add them to your shopping cart with just one click, ready for checkout anytime.",
-      icon: <ShoppingCart className="w-10 h-10 text-orange-600" />,
+        "Securely checkout your wishlist products with fast and safe payment options.",
+      icon: <Package className="w-10 h-10 text-pink-600" />,
     },
     {
       id: 3,
-      title: "Secure Checkout",
+      title: "Track Delivery",
       description:
-        "Enjoy fast and safe payments with multiple options, ensuring a smooth and worry-free shopping experience.",
-      icon: <CreditCard className="w-10 h-10 text-orange-600" />,
+        "Stay updated with real-time tracking and get your dream products at your door.",
+      icon: <Truck className="w-10 h-10 text-pink-600" />,
     },
   ];
 
@@ -32,11 +32,11 @@ export default function CarouselOnePage() {
       {/* Hero Section */}
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
-          From Browsing to Checkout — All in One Place
+          From Wishlist to Delivery — All in One Place
         </h1>
         <p className="max-w-2xl mx-auto text-lg text-gray-600 mt-4">
-          Shop the latest trends, add to your cart, and enjoy smooth, secure
-          payments—effortless shopping every time.
+          Save your favorites, place your order, and track deliveries—your dream
+          products brought straight to your door.
         </p>
       </div>
 
@@ -58,10 +58,9 @@ export default function CarouselOnePage() {
 
       {/* CTA */}
       <div className="text-center mt-16">
-        <Link href="/all-products">
-
-          <button className="px-8 py-3 bg-orange-600 text-white rounded-lg text-lg font-medium hover:bg-orange-700 transition">
-            Start Shopping Now
+        <Link href="/wishlist">
+          <button className="px-8 py-3 bg-pink-600 text-white rounded-lg text-lg font-medium hover:bg-pink-700 transition">
+            View Your Wishlist
           </button>
         </Link>
       </div>
